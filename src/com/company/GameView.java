@@ -8,18 +8,19 @@ import java.awt.event.KeyEvent;
 
 public class GameView extends JPanel implements ActionListener {
     private Timer timer;
-    private int gameSpeed = 300;
     private Snake snake;
     private Apple apple;
     private Rectangle bounds;
     private JLabel startLabel;
     private boolean gameStarted;
+    private boolean isUpdating;
+    private int gameSpeeed;
 
     public GameView() {
         startLabel = new JLabel("Press any key to start game");
         startLabel.setFont(new Font("Script", Font.BOLD, 30));
         startLabel.setForeground(Color.WHITE);
-        setPreferredSize(new Dimension(490, 490));
+        setPreferredSize(new Dimension(510, 510));
         setupNewGame();
 
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
@@ -28,7 +29,7 @@ public class GameView extends JPanel implements ActionListener {
             if (e.getID() == KeyEvent.KEY_PRESSED) {
                 if (!gameStarted) {
                     startGame();
-                } else {
+                } else if (!isUpdating){
                     switch (key) {
                         case KeyEvent.VK_UP:
                             snake.changeDirection(Direction.Up);
@@ -50,10 +51,12 @@ public class GameView extends JPanel implements ActionListener {
     }
 
     private void setupNewGame() {
+        gameSpeeed = 200;
         snake = new Snake();
         apple = new Apple();
-        timer = new Timer(gameSpeed, this);
+        timer = new Timer(gameSpeeed, this);
         gameStarted = false;
+        isUpdating = false;
 
         add(startLabel);
     }
@@ -91,6 +94,7 @@ public class GameView extends JPanel implements ActionListener {
     }
 
     public void update() {
+        isUpdating = true;
         snake.move();
 
         if (snake.intersectsItsSelf() || outOfBounds()) {
@@ -100,11 +104,16 @@ public class GameView extends JPanel implements ActionListener {
         else if (snake.intersects(apple.getBounds())) {
             snake.grow();
             apple.putRandom(getWidth(), getHeight());
+            gameSpeeed -= gameSpeeed*0.02;
+            timer.setDelay(gameSpeeed);
         }
 
         repaint();
+        isUpdating = false;
     }
 
+
+    // Detects weather snake got out of GameView bounds
     private boolean outOfBounds() {
         if (!snake.intersects(bounds)) return true;
         return false;
