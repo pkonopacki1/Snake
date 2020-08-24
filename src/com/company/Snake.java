@@ -5,16 +5,17 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-// TODO: 13.08.2020 Zabezpiecz przed zmianą kierunku zanim wykonano ruch (zmienna isMoved) 
-
 public class Snake {
     private LinkedList<Rectangle> bodys = new LinkedList<>();
     private int initSize = 3;
     private boolean isPut;
+    private boolean isRepainted;  // Variable preventing from changing direction again, before painting snake
     private Direction snakeDirection;
 
     public Snake() {
         isPut = false;
+        isRepainted = false;
+
         snakeDirection = Direction.Right;
 
         for (int i = 0; i < initSize; i++) {
@@ -42,6 +43,7 @@ public class Snake {
         for (Rectangle rectangle : bodys.subList(1, bodys.size())) {
             g2.fill(rectangle);
         }
+        isRepainted = true;
     }
 
     public void move() {
@@ -75,7 +77,7 @@ public class Snake {
     }
 
     public void changeDirection(Direction direction) {
-        if (!direction.isOpposite(snakeDirection)) {
+        if (!direction.isOpposite(snakeDirection) && isRepainted) {
             switch (direction) {
                 case Right:
                     if (snakeDirection != Direction.Left) {
@@ -97,7 +99,9 @@ public class Snake {
                         snakeDirection = Direction.Up;
                     }
                     break;
+
             }
+            isRepainted = false;
         }
     }
 
@@ -111,17 +115,17 @@ public class Snake {
 
     public boolean intersectsItsSelf() {
         for (int i = 1; i < bodys.size(); i++) {
-            if(bodys.getFirst().intersects(bodys.get(i))) {
+            if (bodys.getFirst().intersects(bodys.get(i))) {
                 return true;
             }
         }
         return false;
     }
 
-    public List<Point> getBodiesPoints () {
+    public List<Point> getBodiesPoints() {
         List<Point> pointList = new ArrayList<>();
 
-        for (Rectangle body: bodys) {
+        for (Rectangle body : bodys) {
             pointList.add(new Point(body.x, body.y));
         }
 
