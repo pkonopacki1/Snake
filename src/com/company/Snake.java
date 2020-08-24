@@ -131,4 +131,8 @@ public class Snake {
 
         return pointList;
     }
+
+    public int getLength() {
+        return bodys.size() - initSize;
+    }
 }

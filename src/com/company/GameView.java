@@ -11,15 +11,13 @@ public class GameView extends JPanel implements ActionListener {
     private Snake snake;
     private Apple apple;
     private Rectangle bounds;
-    private JLabel startLabel;
     private boolean gameStarted;
-    private boolean isUpdating;
+    private boolean gameSetup;
     private int gameSpeeed;
+    private int score;
+    private GameViewListener gameViewListener;
 
     public GameView() {
-        startLabel = new JLabel("Press any key to start game");
-        startLabel.setFont(new Font("Script", Font.BOLD, 30));
-        startLabel.setForeground(Color.WHITE);
         setPreferredSize(new Dimension(510, 510));
         setupNewGame();
 
@@ -27,23 +25,19 @@ public class GameView extends JPanel implements ActionListener {
             int key = e.getKeyCode();
 
             if (e.getID() == KeyEvent.KEY_PRESSED) {
-                if (!gameStarted) {
-                    startGame();
-                } else if (!isUpdating){
-                    switch (key) {
-                        case KeyEvent.VK_UP:
-                            snake.changeDirection(Direction.Up);
-                            break;
-                        case KeyEvent.VK_DOWN:
-                            snake.changeDirection(Direction.Down);
-                            break;
-                        case KeyEvent.VK_LEFT:
-                            snake.changeDirection(Direction.Left);
-                            break;
-                        case KeyEvent.VK_RIGHT:
-                            snake.changeDirection(Direction.Right);
-                            break;
-                    }
+                switch (key) {
+                    case KeyEvent.VK_UP:
+                        snake.changeDirection(Direction.Up);
+                        break;
+                    case KeyEvent.VK_DOWN:
+                        snake.changeDirection(Direction.Down);
+                        break;
+                    case KeyEvent.VK_LEFT:
+                        snake.changeDirection(Direction.Left);
+                        break;
+                    case KeyEvent.VK_RIGHT:
+                        snake.changeDirection(Direction.Right);
+                        break;
                 }
             }
             return false;
@@ -51,31 +45,33 @@ public class GameView extends JPanel implements ActionListener {
     }
 
     private void setupNewGame() {
+        score = 0;
         gameSpeeed = 200;
         snake = new Snake();
         apple = new Apple();
         timer = new Timer(gameSpeeed, this);
-        gameStarted = false;
-        isUpdating = false;
-
-        add(startLabel);
+        gameSetup = true;
     }
 
-    private void startGame() {
-        remove(startLabel);
+    public void startGame() {
+        if(!gameSetup) setupNewGame();
         timer.start();
         gameStarted = true;
+        gameViewListener.gameViewUpdated(score);
     }
 
     private void stopGame() {
         timer.stop();
+        System.out.println("Game Over");
+        gameViewListener.gameViewGameOver();
         setupNewGame();
+        gameStarted = false;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setColor(Color.BLACK);
         bounds = new Rectangle(0, 0, getWidth(), getHeight());
         g2.fill(bounds);
@@ -94,22 +90,19 @@ public class GameView extends JPanel implements ActionListener {
     }
 
     public void update() {
-        isUpdating = true;
         snake.move();
 
         if (snake.intersectsItsSelf() || outOfBounds()) {
-            System.out.println("You lost!");
             stopGame();
-        }
-        else if (snake.intersects(apple.getBounds())) {
+        } else if (snake.intersects(apple.getBounds())) {
             snake.grow();
+            score = snake.getLength();
             apple.putRandom(getWidth(), getHeight(), snake.getBodiesPoints());
-            gameSpeeed -= gameSpeeed*0.02;
+            gameSpeeed -= gameSpeeed * 0.02;
             timer.setDelay(gameSpeeed);
+            gameViewListener.gameViewUpdated(score);
         }
-
         repaint();
-        isUpdating = false;
     }
 
 
@@ -121,5 +114,21 @@ public class GameView extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         update();
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public boolean isGameStarted() {
+        return gameStarted;
+    }
+
+    public void setGameStarted(boolean gameStarted) {
+        this.gameStarted = gameStarted;
+    }
+
+    public void setGameViewListener(GameViewListener gameViewListener) {
+        this.gameViewListener = gameViewListener;
     }
 }
