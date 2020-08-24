@@ -87,7 +87,7 @@ public class GameView extends JPanel implements ActionListener {
         snake.paint(g2);
 
         if (!apple.isPut()) {
-            apple.putRandom(getWidth(), getHeight());
+            apple.putRandom(getWidth(), getHeight(), snake.getBodiesPoints());
         }
         apple.paint(g2);
 
@@ -103,7 +103,7 @@ public class GameView extends JPanel implements ActionListener {
         }
         else if (snake.intersects(apple.getBounds())) {
             snake.grow();
-            apple.putRandom(getWidth(), getHeight());
+            apple.putRandom(getWidth(), getHeight(), snake.getBodiesPoints());
             gameSpeeed -= gameSpeeed*0.02;
             timer.setDelay(gameSpeeed);
         }
@@ -115,8 +115,7 @@ public class GameView extends JPanel implements ActionListener {
 
     // Detects weather snake got out of GameView bounds
     private boolean outOfBounds() {
-        if (!snake.intersects(bounds)) return true;
-        return false;
+        return !snake.intersects(bounds);
     }
 
     @Override

@@ -2,9 +2,8 @@ package com.company;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-
-// TODO: 13.08.2020 Zabezpiecz przed pojawieniem się w miejscu węża 
 
 public class Apple extends Ellipse2D.Double {
     private boolean isPut;
@@ -18,13 +17,17 @@ public class Apple extends Ellipse2D.Double {
     }
 
 
-    public void putRandom(int frameHeight, int frameWidth) {
+    public void putRandom(int frameHeight, int frameWidth, List<Point> forbidenPoints) {
         int maxX = frameWidth / Utils.BOARD_CELL;
         int maxY = frameHeight / Utils.BOARD_CELL;
 
-        x = ThreadLocalRandom.current().nextInt(maxX) * Utils.BOARD_CELL;
-        y = ThreadLocalRandom.current().nextInt(maxY) * Utils.BOARD_CELL;
-        isPut  = true;
+        do {
+            x = ThreadLocalRandom.current().nextInt(maxX) * Utils.BOARD_CELL;
+            y = ThreadLocalRandom.current().nextInt(maxY) * Utils.BOARD_CELL;
+        }
+        while (forbidenPoints.contains(new Point( (int) x, (int) y)));
+
+        isPut = true;
     }
 
     public void paint(Graphics2D g2) {

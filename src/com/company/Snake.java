@@ -1,7 +1,9 @@
 package com.company;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 // TODO: 13.08.2020 Zabezpiecz przed zmianą kierunku zanim wykonano ruch (zmienna isMoved) 
 
@@ -104,10 +106,7 @@ public class Snake {
     }
 
     public boolean intersects(Rectangle rectangle) {
-        if (bodys.getFirst().intersects(rectangle)) {
-            return true;
-        }
-        return false;
+        return bodys.getFirst().intersects(rectangle);
     }
 
     public boolean intersectsItsSelf() {
@@ -117,5 +116,15 @@ public class Snake {
             }
         }
         return false;
+    }
+
+    public List<Point> getBodiesPoints () {
+        List<Point> pointList = new ArrayList<>();
+
+        for (Rectangle body: bodys) {
+            pointList.add(new Point(body.x, body.y));
+        }
+
+        return pointList;
     }
 }
