@@ -10,11 +10,11 @@ public class GamePanel extends JPanel {
         add(startGameLabel);
     }
 
-    public void updateScore (int score) {
+    public void updateScore(int score) {
         startGameLabel.setText("Score: " + score);
     }
 
-    public void newGame() {
-        startGameLabel.setText("You lost! \n Press any button to start game.");
+    public void newGame(int score) {
+        startGameLabel.setText("You lost! Your score is " + score + " points. Press any button to start game.");
     }
 }

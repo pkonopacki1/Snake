@@ -1,12 +1,13 @@
 package com.company;
 
 import java.awt.*;
+import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Snake {
-    private LinkedList<Rectangle> bodys = new LinkedList<>();
+    private LinkedList<Ellipse2D.Double> bodys = new LinkedList<>();
     private int initSize = 3;
     private boolean isPut;
     private boolean isRepainted;  // Variable preventing from changing direction again, before painting snake
@@ -19,7 +20,7 @@ public class Snake {
         snakeDirection = Direction.Right;
 
         for (int i = 0; i < initSize; i++) {
-            bodys.add(new Rectangle(Utils.BOARD_CELL, Utils.BOARD_CELL));
+            bodys.add(new Ellipse2D.Double(0.0, 0.0, Utils.BOARD_CELL, Utils.BOARD_CELL));
         }
     }
 
@@ -27,21 +28,21 @@ public class Snake {
         bodys.getFirst().x = x;
         bodys.getFirst().y = y;
 
-        for (Rectangle rectangle : bodys.subList(1, bodys.size())) {
-            rectangle.x = x - (bodys.indexOf(rectangle)) * Utils.BOARD_CELL;
-            rectangle.y = y;
+        for (Ellipse2D.Double ellipse : bodys.subList(1, bodys.size())) {
+            ellipse.x = x - (bodys.indexOf(ellipse)) * Utils.BOARD_CELL;
+            ellipse.y = y;
         }
 
         isPut = true;
     }
 
     public void paint(Graphics2D g2) {
-        g2.setColor(Color.GREEN);
+        g2.setColor(Color.ORANGE);
         g2.fill(bodys.getFirst());
 
-        g2.setColor(Color.CYAN);
-        for (Rectangle rectangle : bodys.subList(1, bodys.size())) {
-            g2.fill(rectangle);
+        g2.setColor(Color.GREEN);
+        for (Ellipse2D.Double ellipse : bodys.subList(1, bodys.size())) {
+            g2.fill(ellipse);
         }
         isRepainted = true;
     }
@@ -71,7 +72,7 @@ public class Snake {
 
     public void grow() {
         int lastButOneInedx = bodys.size() - 1;
-        bodys.add(lastButOneInedx, new Rectangle(Utils.BOARD_CELL, Utils.BOARD_CELL));
+        bodys.add(lastButOneInedx, new Ellipse2D.Double(0.0, 0.0, Utils.BOARD_CELL, Utils.BOARD_CELL));
         bodys.get(lastButOneInedx).x = bodys.getLast().x;
         bodys.get(lastButOneInedx).y = bodys.getLast().y;
     }
@@ -115,7 +116,7 @@ public class Snake {
 
     public boolean intersectsItsSelf() {
         for (int i = 1; i < bodys.size(); i++) {
-            if (bodys.getFirst().intersects(bodys.get(i))) {
+            if (bodys.getFirst().getBounds2D().intersects(bodys.get(i).getBounds2D())) {
                 return true;
             }
         }
@@ -125,8 +126,8 @@ public class Snake {
     public List<Point> getBodiesPoints() {
         List<Point> pointList = new ArrayList<>();
 
-        for (Rectangle body : bodys) {
-            pointList.add(new Point(body.x, body.y));
+        for (Ellipse2D.Double body : bodys) {
+            pointList.add(new Point((int) body.x, (int) body.y));
         }
 
         return pointList;

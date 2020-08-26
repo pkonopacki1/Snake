@@ -62,8 +62,12 @@ public class GameView extends JPanel implements ActionListener {
 
     private void stopGame() {
         timer.stop();
-        System.out.println("Game Over");
-        gameViewListener.gameViewGameOver();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        gameViewListener.gameViewGameOver(score);
         setupNewGame();
         gameStarted = false;
     }

@@ -30,8 +30,8 @@ public class MainFrame extends JFrame {
             }
 
             @Override
-            public void gameViewGameOver() {
-                gamePanel.newGame();
+            public void gameViewGameOver(int score) {
+                gamePanel.newGame(score);
             }
         });
 
