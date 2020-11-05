@@ -6,5 +6,5 @@ This is desktop game Snake, created using Java Swing library.
 
 ## Running application
 To run game:
-1. Unzlip Snake.7z file
-2. Run Snake.exe file
+1. Unzip Snake.7z file.
+2. Run Snake.exe file.
